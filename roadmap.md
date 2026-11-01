@@ -1,11 +1,9 @@
-# Golden Arrow Odyssey — Ataques e skins por IA (out/2026)
-- [x] Trazer o repositório epic-creature-clash para este projeto.
-- [ ] Folhas de sprite por IA: herói principal com 5 ataques × 5 quadros (estilo Kaetram).
-- [ ] Dezenas de skins novas por IA com andar + os mesmos 5 ataques × 5 quadros.
-- [ ] Sistema de combo de 5 ataques no motor (alcance, dano, impacto próprios), hit-stop e tremor.
-- [ ] Painel de aparência: escolher skins com prévia animada dos ataques.
+# Kaetran Customization Forge — nov/2026
+- [x] Trazer o repositório kaetran-customization-forge para este projeto.
+- [ ] Acessórios por IA ajustados nas 4 direções (frente, costas, lados) sem desalinhamento.
+- [ ] Capuz vestido de verdade (cobrindo cabeça e ombros, rosto na abertura).
+- [ ] 3x mais variações de árvores e objetos em todos os biomas (gerados por IA) e espalhados no mapa.
 - [ ] Verificar jogando no navegador.
-- [ ] Próximas fases: chefes e inimigos com ataques por IA; mais melhorias gerais.
 
-# Histórico anterior (projeto de origem)
-- Ver docs do jogo em README.md e src/odyssey/AGENTS.md.
+# Histórico anterior
+- Ver README.md e src/odyssey/AGENTS.md.
