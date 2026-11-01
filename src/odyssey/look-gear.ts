@@ -1,17 +1,20 @@
 // Acessórios pintados por IA (public/look, gerados por scripts/build-look-sheets.py) desenhados
 // em camadas sobre as skins Kaetram (quadros 32×32, pés em y; cabeça ~y-22, olhos ~y-17, ombros ~y-14).
-// Cada folha tem 8 células em 2× a escala do jogo; aqui elas são desenhadas pela metade.
+// Cada folha tem 8 colunas × 3 linhas (frente, lado direito, costas) em 2× a escala do jogo;
+// aqui elas são desenhadas pela metade. O lado esquerdo espelha a linha do lado direito.
 
 export type GearSlot = "hat" | "horns" | "eyes" | "cape" | "wings" | "extra";
-export interface GearItem { name: string; minLevel: number; dy?: number | undefined }
+export interface GearItem { name: string; minLevel: number; dy?: number | undefined; scale?: number | undefined }
 interface SlotDef { label: string; sheet: string; cw: number; ch: number; anchor: number; layer: "back" | "front"; items: GearItem[] }
 
-const it = (name: string, minLevel = 1, dy?: number): GearItem => ({ name, minLevel, dy });
+const it = (name: string, minLevel = 1, dy?: number, scale?: number): GearItem => ({ name, minLevel, dy, scale });
+/** Linha da folha para cada direção do herói. */
+export const GEAR_ROW: Record<string, number> = { down: 0, right: 1, up: 2 };
 
 /** anchor = y (relativo aos pés) onde fica a BASE do acessório, exceto olhos/asas que usam o centro. */
 export const GEAR: Record<GearSlot, SlotDef> = {
   hat: { label: "Chapéus", sheet: "/look/hats.png", cw: 36, ch: 32, anchor: -17, layer: "front", items: [
-    it("Chapéu de mago"), it("Coroa dourada", 8), it("Elmo de cavaleiro", 3, 3), it("Tricórnio pirata", 2), it("Capuz de couro", 1, 3), it("Chapéu de palha"), it("Elmo viking", 5), it("Gorro de patrulheiro"),
+    it("Chapéu de mago"), it("Coroa dourada", 8), it("Elmo de cavaleiro", 3, 3), it("Tricórnio pirata", 2), it("Capuz de couro", 1, 7, 1.2), it("Chapéu de palha"), it("Elmo viking", 5), it("Gorro de patrulheiro"),
   ] },
   horns: { label: "Chifres", sheet: "/look/horns.png", cw: 40, ch: 28, anchor: -19, layer: "front", items: [
     it("Chifres de demônio"), it("Chifres de carneiro", 2), it("Chifres de dragão", 6), it("Galhada de cervo"), it("Chifres de unicórnio", 4), it("Chifres de touro", 3), it("Chifres de cristal", 8), it("Chifres do vazio", 12),
@@ -46,20 +49,20 @@ export type GearPick = Partial<Record<GearSlot, number>>;
 function drawOne(c: CanvasRenderingContext2D, slot: GearSlot, i: number, x: number, y: number, dir: string, time: number, sc: number) {
   const def = GEAR[slot], item = def.items[i]; const im = sheet(def.sheet);
   if (!item || !im) return;
-  let w = def.cw / 2, h = def.ch / 2;
-  // Vista lateral: acessórios simétricos ficam mais estreitos; olhos deslizam para a frente do rosto.
-  const side = dir === "right";
+  const k = item.scale ?? 1;
+  const w = (def.cw / 2) * k, h = (def.ch / 2) * k;
+  const row = GEAR_ROW[dir] ?? 0;
+  // A arte já foi pintada em cada direção; só pequenos ajustes de posição no perfil.
   let dx = 0;
-  if (side && (slot === "wings" || slot === "horns" || slot === "extra")) w *= 0.7;
-  if (side && slot === "eyes") { w *= 0.55; dx = 2; }
-  if (side && slot === "cape") { w *= 0.8; dx = -2; }
+  if (dir === "right" && slot === "eyes") dx = 1;
+  if (dir === "right" && slot === "cape") dx = -2;
   const centered = slot === "eyes" || slot === "wings";
   let top = centered ? def.anchor - h / 2 : def.anchor - h;
   if (slot === "cape") top = def.anchor; // capa pende a partir dos ombros
   top += item.dy ?? 0;
   if (slot === "wings") top += Math.sin(time * 5) * 0.8;
   if (slot === "extra" && (i === 0 || i === 5 || i === 7)) top += Math.sin(time * 3) * 0.6;
-  c.drawImage(im, i * def.cw, 0, def.cw, def.ch, Math.round(x + (dx - w / 2) * sc), Math.round(y + top * sc), w * sc, h * sc);
+  c.drawImage(im, i * def.cw, row * def.ch, def.cw, def.ch, Math.round(x + (dx - w / 2) * sc), Math.round(y + top * sc), w * sc, h * sc);
 }
 
 /** Camadas atrás do corpo (asas/capa quando o herói olha para baixo ou para o lado). */
