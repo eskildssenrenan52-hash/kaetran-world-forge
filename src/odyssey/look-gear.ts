@@ -22,7 +22,7 @@ export const GEAR: Record<GearSlot, SlotDef> = {
   eyes: { label: "Olhos", sheet: "/look/eyes.png", cw: 24, ch: 12, anchor: -17, layer: "front", items: [
     it("Olhos de brasa"), it("Olhos arcanos"), it("Óculos redondos"), it("Tapa-olho", 2), it("Máscara dourada", 6), it("Venda ninja", 3), it("Visor rubro", 10), it("Olhos solares", 5),
   ] },
-  cape: { label: "Capas", sheet: "/look/capes.png", cw: 32, ch: 36, anchor: -15, layer: "back", items: [
+  cape: { label: "Capas", sheet: "/look/capes.png", cw: 32, ch: 36, anchor: -17, layer: "back", items: [
     it("Capa carmesim"), it("Manto real", 5), it("Capa da floresta"), it("Capa do oceano"), it("Capa dourada", 10), it("Capa estrelada", 7), it("Arminho real", 12), it("Manto de viajante"),
   ] },
   wings: { label: "Asas", sheet: "/look/wings.png", cw: 64, ch: 40, anchor: -13, layer: "back", items: [
@@ -56,6 +56,8 @@ function drawOne(c: CanvasRenderingContext2D, slot: GearSlot, i: number, x: numb
   let dx = 0;
   if (dir === "right" && slot === "eyes") dx = 1;
   if (dir === "right" && slot === "cape") dx = -2;
+  // Capuz: no perfil o tecido cai atrás da nuca, então recua um pouco.
+  if (dir === "right" && slot === "hat" && (item.scale ?? 1) > 1) dx = -1;
   const centered = slot === "eyes" || slot === "wings";
   let top = centered ? def.anchor - h / 2 : def.anchor - h;
   if (slot === "cape") top = def.anchor; // capa pende a partir dos ombros
